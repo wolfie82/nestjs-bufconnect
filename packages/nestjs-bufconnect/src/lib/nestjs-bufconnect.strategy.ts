@@ -5,10 +5,9 @@ import {
   MessageHandler,
   Server,
 } from '@nestjs/microservices';
-
+import { ServerTypeOptions } from './nestjs-bufconnect.interface';
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
 import { HTTPServer } from './server';
-import { ServerTypeOptions } from './nestjs-bufconnect.interface';
 import { addServicesToRouter, createServiceHandlersMap } from './util';
 
 /**
@@ -97,11 +96,7 @@ export class ServerBufConnect
     isEventHandler = false
   ) {
     const route = isString(pattern) ? pattern : JSON.stringify(pattern);
-    if (isEventHandler) {
-      const modifiedCallback = callback;
-      modifiedCallback.isEventHandler = true;
-      this.messageHandlers.set(route, modifiedCallback);
-    }
+    callback.isEventHandler = isEventHandler;
     this.messageHandlers.set(route, callback);
   }
 
