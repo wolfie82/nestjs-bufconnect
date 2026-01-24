@@ -1,6 +1,5 @@
+import { DescService } from '@bufbuild/protobuf';
 import { MessagePattern } from '@nestjs/microservices';
-
-import { ServiceType } from '@bufbuild/protobuf';
 import {
   BUF_TRANSPORT,
   METHOD_DECORATOR_KEY,
@@ -26,11 +25,11 @@ function isFunctionPropertyDescriptor(
  * Decorator for defining a gRPC service and its methods. It uses the metadata from
  * `BufMethod` and `BufStreamMethod` to initialize the service and its methods.
  *
- * @param serviceName - A `ServiceType` object that defines the gRPC service.
+ * @param serviceName - A `DescService` object that defines the gRPC service.
  * @returns A class decorator that can be applied to a class implementing the gRPC service.
  */
 export const BufService =
-  (serviceName: ServiceType): ClassDecorator =>
+  (serviceName: DescService): ClassDecorator =>
   (target: ConstructorWithPrototype) => {
     const processMethodKey = (methodImpl: MethodKey) => {
       const functionName = methodImpl.key;

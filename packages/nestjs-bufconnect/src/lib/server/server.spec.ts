@@ -12,11 +12,14 @@ import {
   ServerProtocol,
 } from '../nestjs-bufconnect.interface';
 
-const attributes = [{ name: 'commonName', value: 'NestJsBufConnect' }];
-const pems = selfsigned.generate(attributes, { days: 1 });
-
 describe('HTTPServer', () => {
   const mockRouter = (router: ConnectRouter) => {};
+  let pems: selfsigned.GenerateResult;
+
+  beforeAll(async () => {
+    const attributes = [{ name: 'commonName', value: 'NestJsBufConnect' }];
+    pems = await selfsigned.generate(attributes);
+  });
 
   describe('listen', () => {
     it('should listen on HTTP protocol', async () => {

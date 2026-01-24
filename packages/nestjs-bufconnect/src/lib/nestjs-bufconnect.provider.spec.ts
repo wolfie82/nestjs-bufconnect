@@ -1,5 +1,5 @@
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
-import { ElizaTestService } from '../test-utils/mocks/service.test';
+import { ElizaService } from '../test-utils/mocks/service.test';
 
 describe('CustomMetadataStore', () => {
   let customMetadataStore: CustomMetadataStore;
@@ -15,7 +15,7 @@ describe('CustomMetadataStore', () => {
 
   it('should store and retrieve ServiceType instances', () => {
     const key = 'testKey';
-    const serviceType = ElizaTestService;
+    const serviceType = ElizaService;
 
     customMetadataStore.set(key, serviceType);
     const retrievedServiceType = customMetadataStore.get(key);

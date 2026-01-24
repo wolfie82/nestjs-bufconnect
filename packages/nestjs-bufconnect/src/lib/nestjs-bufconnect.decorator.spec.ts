@@ -1,26 +1,26 @@
+import { ConnectRouter, createClient } from '@connectrpc/connect';
 import {
   connectNodeAdapter,
   createGrpcTransport,
 } from '@connectrpc/connect-node';
-import { ConnectRouter, createPromiseClient } from '@connectrpc/connect';
+import { MessageHandler } from '@nestjs/microservices';
 import * as http2 from 'http2';
-import { GrpcMethodStreamingType, MessageHandler } from '@nestjs/microservices';
+import { ElizaService, SayRequest } from '../test-utils/mocks/service.test';
+import { BufMethod, BufService } from './nestjs-bufconnect.decorator';
 import { MethodType } from './nestjs-bufconnect.interface';
 import { CustomMetadataStore } from './nestjs-bufconnect.provider';
-import { BufMethod, BufService } from './nestjs-bufconnect.decorator';
-import { ElizaTestService, SayR } from '../test-utils/mocks/service.test';
 import {
   addServicesToRouter,
   createPattern,
   createServiceHandlersMap,
 } from './util';
 
-@BufService(ElizaTestService)
+@BufService(ElizaService)
 class TestService {
   // eslint-disable-next-line class-methods-use-this
   @BufMethod()
-  say(request: SayR): SayR {
-    return { sentence: `you said: ${request.sentence}` } as SayR;
+  say(request: SayRequest) {
+    return { sentence: `you said: ${request.sentence}` };
   }
 }
 describe('BufMethod decorators', () => {
@@ -38,7 +38,7 @@ describe('BufMethod decorators', () => {
       };
 
       const pattern = createPattern(
-        ElizaTestService.typeName,
+        ElizaService.typeName,
         'say',
         MethodType.NO_STREAMING
       );
@@ -67,9 +67,8 @@ describe('BufMethod decorators', () => {
     async function runClient() {
       const transport = createGrpcTransport({
         baseUrl: `http://localhost:${port}`,
-        httpVersion: '2',
       });
-      const client = createPromiseClient(ElizaTestService, transport);
+      const client = createClient(ElizaService, transport);
       const response = await client.say({ sentence: 'I feel happy.' });
       expect(response.sentence).toBe('you said: I feel happy.');
     }

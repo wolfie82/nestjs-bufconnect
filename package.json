@@ -13,8 +13,8 @@
     "@commitlint/cli": "^17.5.1",
     "@commitlint/config-conventional": "^17.4.4",
     "@commitlint/prompt-cli": "^17.5.0",
-    "@nestjs/schematics": "^9.0.0",
-    "@nestjs/testing": "^9.0.0",
+    "@nestjs/schematics": "^10.0.0",
+    "@nestjs/testing": "^10.0.0",
     "@nrwl/cli": "^15.8.9",
     "@nrwl/eslint-plugin-nx": "15.8.9",
     "@nrwl/jest": "15.8.9",
@@ -27,7 +27,7 @@
     "@rollup/plugin-typescript": "^11.0.0",
     "@theunderscorer/nx-semantic-release": "^2.2.1",
     "@types/jest": "^29.4.0",
-    "@types/node": "16.11.7",
+    "@types/node": "^24.0.0",
     "@typescript-eslint/eslint-plugin": "^5.57.0",
     "@typescript-eslint/parser": "^5.57.0",
     "eslint": "~8.15.0",
@@ -54,7 +54,7 @@
     "rollup-plugin-dts": "^5.3.0",
     "rollup-plugin-generate-package-json": "^3.2.0",
     "rollup-plugin-node-externals": "^5.1.2",
-    "selfsigned": "^2.1.1",
+    "selfsigned": "^5.0.0",
     "ts-jest": "^29.0.5",
     "ts-node": "10.9.1",
     "typescript": "~4.9.5"
@@ -70,7 +70,7 @@
     }
   },
   "engines": {
-    "pnpm": ">= 7",
-    "node": ">= v18.5.0"
+    "pnpm": ">= 9",
+    "node": ">= v22.0.0"
   }
 }

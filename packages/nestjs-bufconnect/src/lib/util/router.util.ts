@@ -1,6 +1,7 @@
+import type { DescService } from '@bufbuild/protobuf';
 import { ConnectRouter, ServiceImpl } from '@connectrpc/connect';
-import { ServiceType } from '@bufbuild/protobuf';
 import { MessageHandler } from '@nestjs/microservices';
+import { parse } from 'node:path/win32';
 import { lastValueFrom, Observable } from 'rxjs';
 import { BufConnectPattern, MethodType } from '../nestjs-bufconnect.interface';
 import { CustomMetadataStore } from '../nestjs-bufconnect.provider';
@@ -34,7 +35,7 @@ export const createPattern = (
  */
 export const addServicesToRouter = (
   router: ConnectRouter,
-  serviceHandlersMap: Record<string, Partial<ServiceImpl<ServiceType>>>,
+  serviceHandlersMap: Record<string, Partial<ServiceImpl<DescService>>>,
   customMetadataStore: CustomMetadataStore
 ) => {
   Object.keys(serviceHandlersMap).forEach((serviceName) => {
@@ -47,7 +48,7 @@ export const addServicesToRouter = (
 
 /**
  * Creates a map of service handlers using the provided handlers and customMetadataStore.
- * The map is keyed by service names with values being partial implementations of the ServiceType.
+ * The map is keyed by service names with values being partial implementations of the DescService.
  *
  * @param handlers - A map of message handlers, keyed by JSON string patterns.
  * @param customMetadataStore - A store containing metadata for the services.
@@ -56,18 +57,22 @@ export const addServicesToRouter = (
 export const createServiceHandlersMap = (
   handlers: Map<string, MessageHandler>,
   customMetadataStore: CustomMetadataStore
-): Record<string, Partial<ServiceImpl<ServiceType>>> => {
-  const serviceHandlersMap: Record<
+): Record<string, Partial<ServiceImpl<DescService>>> => {
+  let serviceHandlersMap: Record<
     string,
-    Partial<ServiceImpl<ServiceType>>
+    Partial<ServiceImpl<DescService>>
   > = {};
 
   handlers.forEach((handlerMetadata, pattern) => {
-    const parsedPattern = JSON.parse(pattern);
+    const parsedPattern: {
+      service: string;
+      rpc: string;
+      streaming: MethodType;
+    } = JSON.parse(pattern);
 
     if (handlerMetadata) {
-      const service = customMetadataStore.get(parsedPattern.service as string);
-      const methodProto = service?.methods[parsedPattern.rpc];
+      const service = customMetadataStore.get(parsedPattern.service);
+      const methodProto = service?.method[parsedPattern.rpc];
 
       if (service && methodProto) {
         if (!serviceHandlersMap[parsedPattern.service]) {
@@ -76,6 +81,7 @@ export const createServiceHandlersMap = (
 
         switch (parsedPattern.streaming) {
           case MethodType.NO_STREAMING: {
+            // @ts-ignore
             serviceHandlersMap[parsedPattern.service][parsedPattern.rpc] =
               async (request: unknown, context: unknown) => {
                 const result = handlerMetadata(request, context);
@@ -85,6 +91,7 @@ export const createServiceHandlersMap = (
             break;
           }
           case MethodType.RX_STREAMING: {
+            // @ts-ignore
             serviceHandlersMap[parsedPattern.service][parsedPattern.rpc] =
               async function* rxStreamingHandler(
                 request: unknown,
